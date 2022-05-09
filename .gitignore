@@ -1,0 +1,11 @@
+**/.idea
+**/.ipynb*
+**/data/**/*.json
+**/data/**/*.csv
+**/venv/
+**/__pycache__/
+**/*.toml
+
+**/embeddings/*.gz
+**/predictions/**/*.json
+**/*.h5

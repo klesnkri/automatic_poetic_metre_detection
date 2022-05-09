@@ -1,0 +1,6 @@
+[submodule "resources/corpusCzechVerse"]
+	path = resources/corpusCzechVerse
+	url = git@github.com:versotym/corpusCzechVerse.git
+[submodule "resources/emnlp2017-bilstm-cnn-crf"]
+	path = resources/emnlp2017-bilstm-cnn-crf
+	url = git@github.com:klesnkri/emnlp2017-bilstm-cnn-crf.git

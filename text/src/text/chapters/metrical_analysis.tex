@@ -1,0 +1,380 @@
+\chapter{Metrical analysis of Czech syllabotonic verse}\label{chap:metrical-analysis}
+
+\begin{chapterabstract}
+This chapter describes the pipeline to follow when performing the metrical analysis of Czech syllabotonic verse. It presents all subtasks along with possible approaches to solve them.
+\end{chapterabstract}
+
+%---------------------------------------------------------------
+\section{Syllabification}
+%---------------------------------------------------------------
+When performing a metrical analysis of verse, the first step is to split the text into syllables. Perform the so-called syllabification.
+
+\subsection{Syllable in Czech}
+For a native speaker, the question of how many syllables are there in a word is generally relatively easy to answer. Why? Inside every syllable, there is a sonority peak. In Czech, the sonority peak can be expressed by:
+
+\begin{enumerate}
+    \item Vocal or diphthong.
+    \item Sonorant \emph{r} or \emph{l} when positioned between two consonants or at the end of a word after at least one consonant, e.g.~\emph{krk}, \emph{vlk}.
+    \item In some exceptional cases also nasals or sibilants, e.g.~\emph{osm}, \emph{pst}, \emph{sedm}.
+\end{enumerate}
+
+Words without the sonority peak -- non-syllabic prepositions \emph{v}, \emph{k}, \emph{s}, and \emph{z} -- form one syllable with the first syllable of the following word.
+
+On the other hand, determining syllable boundaries is a challenge even for a native speaker. For example, the Czech word \emph{houska}. It obviously consists of two syllables, but how to split it? \emph{Hou-ska} or \emph{hous-ka}? There is no correct answer.~\cite{UvodTeorieVerse}
+
+\subsection{Syllabification using phonetic transcription}
+So, native speakers can easily determine the number of syllables in a word, but how to do it using a computer? The KVĚTA~\cite{KVETA} program applies a sequence of rules to the input words and obtains their phonetic transcriptions. This is possible because the Czech orthography is highly phonemic. The only words that cannot be transcribed using a set of rules are words containing bigrams and foreign words.
+
+As there seems to be no efficient algorithm to automatically decide which instances of the bigrams \emph{au}, \emph{ou} and \emph{eu} represent a diphthong (e.g.~\emph{koule}) and which represent two standalone vowels (e.g.~\emph{pouliční}), KVĚTA transcribes them using a manually built token-diphthong library and applying a few additional rules. Another problem is irregularities when, for example, words like \emph{nauka} or \emph{Zeus} are treated in some poems as disyllabic and in other poems as monosyllabic. Such irregularities are revealed when KVĚTA tries to assign the most probable metre to a poem. The correct variant must then be selected manually.
+
+When dealing with words from other languages, a possible approach would be to identify the most probable donor language and apply the transcription rules of this language. However, since there are many counterexamples as to why this approach would not be efficient, KVĚTA authors decided to also transcribe foreign words using a manually built library. For some words where the number of syllables differs depending on the case (e.g.~\emph{Shakespeare}) or depending on the pronunciation (e.g.~\emph{Baudelaire}) the selection of the right variant is also done manually.~\cite{KVETA}
+
+\subsection{Syllabification using hyphenation tools}
+Thus, for each word, the number of syllables can be obtained from its phonetic transcription. However, is there no way to obtain the number of syllables in a word without having its phonetic transcription? And to also extract the individual syllables?~\cite{GitCorpusCzechVerse}
+
+There exist some tools for the hyphenation of Czech texts. Hyphenation seems like a task similar to syllabification but, in fact, it is something a little different. Hyphenation is nowadays used within every document preparation system (e.g.~\TeX{} or any modern web browser) to decide where a word can be split to continue on the following line. There are two approaches to hyphenation:
+
+\begin{itemize}
+    \item etymology-based,
+    \item phonology-based.
+\end{itemize}
+
+Etymology-based systems cut words on the border of a compound word or the border of the stem and ending or prefix or negation. Phonology-based systems cut words based on the pronunciation of syllables.~\cite{TowardsUniversalHypenation} However, they do not cut words directly into individual syllables. Other typographical rules are applied, such as that the first and the last letter of a word cannot be hyphenated (e.g.~the word \emph{italština} is hyphenated as \emph{ital-šti-na}) or that words containing less than five letters are not hyphenated.~\cite{HyphenateBatchelder}
+
+The approach of using hyphenation tools for syllabification has already been tested by researchers when performing metrical analysis of English and German verse using machine learning. For English verse they decided to train BiLSTM-CRF syllabification model instead, for German verse they used an ensemble of hyphenation tools and heuristic corrections.~\cite{MetricalTaggingInTheWild}
+
+\pagebreak
+
+\section{Detecting accented syllables}
+\subsection{Accent in Czech}
+When talking about accent in Czech, usually, each initial syllable of a polysyllabic word is considered accented, while each non-initial non-accented. For monosyllabic words, the rules are not as clear. The general tendency is that the content words (nouns, adjectives, numerals, interjections, and verbs, except for forms of the lemma \emph{být}) are accented, while the function words are non-accented.
+
+A special case is monosyllabic prepositions proper (MPPs), which usually behave as forming a~single word with the following one and taking over its accent. However, sometimes MPPs can also be used as standard non-accented function words. This has been largely exploited by poets, especially in the second half of the 19\textsuperscript{th} century.~\cite{KVETA} Also the longer the subsequent word, the greater the tendency to have an accent not only on the MPP but also on the subsequent word, e.g.~\emph{\uline{na} \uline{me}zinárodní \uline{le}tiště}.~\cite{UvodTeorieVerse} MPPs are represented by these prepositions: \emph{před}, \emph{od}, \emph{ob}, \emph{ku}, \emph{ke}, \emph{do}, \emph{ve}, \emph{po}, \emph{nad}, \emph{přes}, \emph{při}, \emph{bez}, \emph{se}, \emph{ze}, \emph{za}, \emph{u}, \emph{pod}, \emph{pr}o and \emph{zpod}. In the case of two subsequent MPPs, the first is considered a standard function word.~\cite{KVETA}
+
+\section{Metre assignment}
+In this section, two approaches to the metrical tagging of Czech syllabotonic verse are presented: a rule-based approach that the KVĚTA program used in the past~\cite{TowardsAutomaticAnalysis} and a data-driven approach that the current version of the KVĚTA program is using.~\cite{KVETA}
+
+\subsection{Rule-based KVĚTA algorithm}
+All the following information is taken from~\cite{TowardsAutomaticAnalysis}.
+
+\subsubsection{Prosodic analysis}
+The first step of the rule-based algorithm is to represent a line of verse as a string containing symbols \emph{0}, \emph{1} and \emph{+}, where \emph{1} represents an accented syllable, \emph{0} a non-accented syllable, and a \emph{+} a monosyllable. Monosyllables can be both accented and non-accented. In the case of a~monosyllabic preposition, the preposition itself is treated as an initial syllable of a polysyllabic unit and the following syllable as a non-initial syllable of a polysyllabic unit. For the transcription rules, see Table~\ref{tab:kveta-rule-based-transcription-rules}.
+
+\begin{table}[htpb]
+\centering
+\caption{Rule-based KVĚTA algorithm: Prosodic transcription rules}\label{tab:kveta-rule-based-transcription-rules}
+\begin{tabular}{|c||l|}\hline
+    Syllable type & Symbol\\\hline\hline
+    First syllable of a polysyllabic unit & 1\\
+    Non-initial syllable of a polysyllabic unit & 0\\
+    Monosyllable & +\\\hline
+\end{tabular}
+\end{table}
+
+The sentence \enquote{Za trochu lásky šel bych světa kraj} is represented by a primary string:
+\begin{verbatim}
+10010++10+.
+\end{verbatim}
+
+The problem is that poets do not produce purely metrical lines. Therefore, in addition to the primary string, the algorithm also analyses three alternative strings applying the three most common stress alterations:
+\begin{enumerate}
+    \item Treating the sequence of a monosyllabic preposition and another unit as having the stress located not on the first syllable (preposition) but on the second one (\verb|100 -> +10|).
+    \item Relocating the stress of a polysyllabic unit (incidental prepositions included) to the immediately preceding monosyllable (\verb|+10 -> 100|).
+    \item Tolerating that stress of one polysyllabic unit occupies one of the forbidden positions.
+\end{enumerate}
+
+\subsubsection{Metrical analysis}
+The metrical analysis is based on the following simplified rules of Czech syllabotonic verse:
+
+\begin{enumerate}
+    \item A line is iambic (I) if no odd position except the first (allowing dactylic incipits) is occupied by the stress of a polysyllabic unit.
+    \item A line is trochaic (T) if no even position is occupied by the stress of a polysyllabic unit.
+    \item \label{item:kveta-rule-based-rules-3} A line is dactylic (D) if for each $n = 0, 1, 2, \ldots$
+        \begin{enumerate}
+            \item no (3n+3)\textsuperscript{rd} position is occupied by the stress of a polysyllabic unit and
+            \item \label{item:kveta-rule-based-rules-3b} no (3n+2)\textsuperscript{nd} position is occupied by the stress of a unit consisting of three or more syllables and
+            \item \label{item:kveta-rule-based-rules-3c} every stress occupying a (3n+2)\textsuperscript{nd} position is preceded by a monosyllabic unit.
+        \end{enumerate}
+    \item \label{item:kveta-rule-based-rules-4} A line is dactylic with anacrusis (Da) if for each $n = 0, 1, 2, \ldots$
+        \begin{enumerate}
+            \item the first position is occupied by a monosyllabic unit and
+            \item \label{item:kveta-rule-based-rules-4b} no (3n+4)\textsuperscript{th} position is occupied by the stress of a polysyllabic unit and
+            \item \label{item:kveta-rule-based-rules-4c} no (3n+3)\textsuperscript{rd} position is occupied by the stress of a unit consisting of three or more syllables and
+            \item every stress occupying a (3n+3)\textsuperscript{rd} position is preceded by a monosyllabic unit.
+        \end{enumerate}
+    \item A line is dactylo-trochaic (DT) if a \enquote{virtual syllable} can be inserted into the line after some of the 3n+2 nd positions (at least once) in order to meet the conditions specified in~\ref{item:kveta-rule-based-rules-3}.
+    \item A line is dactylo-trochaic with anacrusis (DTa) if the \enquote{virtual syllable} can be inserted into the line after some of the 3n+3\textsuperscript{rd} positions (at least once) in order to meet the conditions specified in~\ref{item:kveta-rule-based-rules-4}.
+\end{enumerate}
+
+The metrical tagging procedure is visualised on a sample from Karel Hynek Mácha's \emph{Máj} -- an iambic poem, yet with iambic constraints frequently violated in various ways. Row 0 shows the primary string, and rows I-III show the alternative strings that allow for stress alterations. Positions within the string that violate the constraints of a given metre are highlighted. The first string in a column that does not violate the constraints of a given metre or violates it only once (row III) is underlined:
+
+\pagebreak
+
+Zhasla měsíce světlá moc,\\
+\begin{center}
+\begin{tabular}{c||m{2.5cm}|m{2.5cm}|m{2.5cm}|m{3.5cm}}
+    Row & Iamb & Trochee & Dactyl & Dactyl with anacrusis\\\hline\hline
+    0 & 10\textbf{1}0010+ & 10100\textbf{1}0+ & 10\textbf{1}00\textbf{1}0+ & \textbf{1}0\textbf{1}00\textbf{1}0+\\
+    I & 10\textbf{1}0010+ & 10100\textbf{1}0+ & 10\textbf{1}00\textbf{1}0+ & \textbf{1}0\textbf{1}00\textbf{1}0+\\
+    II & 10\textbf{1}0010+ & 10100\textbf{1}0+ & 10\textbf{1}00\textbf{1}0+ & \textbf{1}0\textbf{1}00\textbf{1}0+\\
+    III & \underline{10\textbf{1}0010+} & \underline{10100\textbf{1}0+} & 10\textbf{1}00\textbf{1}0+ & \textbf{1}0\textbf{1}00\textbf{1}0+\\
+\end{tabular}
+\end{center}
+
+Output: Iamb / Trochee
+
+i hvězdný svit a kol a kol\\
+\begin{center}
+\begin{tabular}{c||m{2.5cm}|m{2.5cm}|m{2.5cm}|m{3.5cm}}
+    Row & Iamb & Trochee & Dactyl & Dactyl with anacrusis\\\hline\hline
+    0 & \underline{+10+++++} & +\textbf{1}0+++++ & \underline{+10+++++} & \underline{+10+++++}\\
+    I & +10+++++ & +\textbf{1}0+++++ & +10+++++ & +10+++++\\
+    II & 100+++++ & \underline{100+++++} & 100+++++ & \textbf{1}00+++++\\
+    III & +10+++++ & +\textbf{1}0+++++ & +10+++++ & +10+++++\\
+\end{tabular}
+\end{center}
+
+Output: Iamb / Trochee / Dactyl / Dactyl with anacrusis
+
+\begin{center}
+je pouhé temno, širý dol\\
+\begin{tabular}{c||m{2.5cm}|m{2.5cm}|m{2.5cm}|m{3.5cm}}
+    Row & Iamb & Trochee & Dactyl & Dactyl with anacrusis\\\hline\hline
+    0 & \underline{+101010+} & +\textbf{1}0\textbf{1}0\textbf{1}0+ & +1010\textbf{1}0+ & +10\textbf{1}0\textbf{1}0+\\
+    I & +101010+ & +\textbf{1}0\textbf{1}0\textbf{1}0+ & +1010\textbf{1}0+ & +10\textbf{1}0\textbf{1}0+\\
+    II & 1001010+ & 100\textbf{1}0\textbf{1}0+ & 10010\textbf{1}0+ & \textbf{1}00\textbf{1}0\textbf{1}0+\\
+    III & +101010+ & +\textbf{1}0\textbf{1}0\textbf{1}0+ & \underline{+1010\textbf{1}0+} & +10\textbf{1}0\textbf{1}0+\\
+\end{tabular}
+\end{center}
+
+Output: Iamb / Dactyl
+
+co hrob daleký zívá.\\
+\begin{center}
+\begin{tabular}{c||m{2.5cm}|m{2.5cm}|m{2.5cm}|m{3.5cm}}
+    Row & Iamb & Trochee & Dactyl & Dactyl with anacrusis\\\hline\hline
+    0 & ++\textbf{1}0010 & ++100\textbf{1}0 & ++\textbf{1}00\textbf{1}0 & ++\textbf{1}00\textbf{1}0\\
+    I & ++\textbf{1}0010 & ++100\textbf{1}0 & ++\textbf{1}00\textbf{1}0 & ++\textbf{1}00\textbf{1}0\\
+    II & \underline{+100010} & +\textbf{1}000\textbf{1}0 & +\textbf{1}000\textbf{1}0 & +1000\textbf{1}0\\
+    III & ++\textbf{1}0010 & \underline{++100\textbf{1}0} & ++\textbf{1}00\textbf{1}0 & ++\textbf{1}00\textbf{1}0\\
+\end{tabular}
+\end{center}
+
+Output: Iamb / Trochee
+
+The final metre for the poem is selected based on a \enquote{metrical index} value. The metrical index of a line is computed as follows:
+\begin{itemize}
+    \item If at any step a line is assigned a metre, the metrical index of that metre has the value of 100.
+    \item Every stress of a disyllabic unit according to rules~\ref{item:kveta-rule-based-rules-3b}/\ref{item:kveta-rule-based-rules-3c} or~\ref{item:kveta-rule-based-rules-4b}/\ref{item:kveta-rule-based-rules-4c} except for
+the second position (allowing iambic incipits in the dactylic verse) lowers the metrical index value by 20.
+    \item If the metre is assigned at row I, metrical index is lowered by 40.
+    \item If the metre is assigned at row II, metrical index is lowered by 60.
+    \item If the metre is assigned at row III, metrical index is lowered by 80.
+    \item Negative values are set to 0.
+ \end{itemize}
+
+For every metre, the arithmetic mean of the line metrical indices is computed. The metre with the highest mean value, that further meets the condition of having the mean value higher than 50 and containing no line with a metrical index of 0, is finally selected. For the Mácha's \emph{Máj} example, Iamb is selected:
+
+\begin{center}
+\begin{tabular}{c||l|l|l|l}
+    & Iamb & Trochee & Dactyl & Dactyl with anacrusis\\\hline\hline
+    Zhasla měsíce světlá moc, & 20 & 20 & 0 & 0\\
+    i hvězdný svit a kol a kol & 100 & 40 & 100 & 100\\
+    je pouhé temno, širý dol & 100 & 0 & 20 & 0\\
+    co hrob daleký zívá. & 40 & 20 & 0 & 0\\\hline\hline
+    Arithmetic mean & \underline{65} & 20 & 30 & 25\\
+\end{tabular}
+\end{center}
+
+\subsubsection{Multimetric lines}
+In this approach, the metre for a multimetric line is selected depending on the context: the metres of other lines. For multimetric poems that can be assigned multiple metres to an equal degree, preference rules are applied.
+
+\subsubsection{Conclusion}
+To conclude, this algorithm can be used for the metrical tagging of Czech syllabotonic verse. Because of the inability of the algorithm to decide whether a monosyllable is accented or not, distinctions among some rare types of dactylo-trochee may not be recognised. Polymetric poem tagging is also not possible. Furthermore, this algorithm does not tag hexametre and pentametre poems, which are tagged within the Corpus of Czech Verse.
+
+\subsection{Data-driven KVĚTA algorithm}
+All the following information comes from~\cite{KVETA}.
+
+\subsubsection{Syllable classes}
+\begin{table}[hptb]
+\centering
+\caption{Data-driven KVĚTA algorithm: Syllable class structure}\label{tab:kveta-data-driven-syllable-class-structure}
+\begin{tabular}{|c||l|}\hline
+    Parameter & Values\\\hline\hline
+    initial & \begin{tabular}{@{}l@{}}1 (word-initial syllable)\\0 (non-initial syllable)\end{tabular}\\\hline
+    final & \begin{tabular}{@{}l@{}}1 (word-final syllable)\\0 (non-final syllable)\end{tabular}\\\hline
+    contentWord & \begin{tabular}{@{}l@{}}1 (content-word)\\0 (function word)\end{tabular}\\\hline
+    preposition & \begin{tabular}{@{}l@{}}1 (MPP preposition)\\0 (other word)\end{tabular}\\\hline
+    prevPreposition & \begin{tabular}{@{}l@{}}1 (preceded by MPP preposition)\\0 (preceded by other word)\end{tabular}\\\hline
+    prevInitial & \begin{tabular}{@{}l@{}}1 (preceded by word-initial syllable)\\0 (preceded by non-initial syllable)\end{tabular}\\\hline
+    nextlong & \begin{tabular}{@{}l@{}}1 (followed by syllable containing long vowel or diphtong)\\0 (followed by other syllable)\end{tabular}\\\hline
+\end{tabular}
+\end{table}
+
+The data-driven KVĚTA approach represents every syllable as a so-called Syllable class. The Syllable class is a data class containing Boolean parameters (see Table~\ref{tab:kveta-data-driven-syllable-class-structure}) extracted from the Czech accent rules. A poem is then internally represented as a list of lists of Syllable classes, the division into stanzas is not taken into account.
+
+In theory, there are 128 different combinations of parameter values, but in practise many of those are discarded as, e.g.~\verb|{initial: 0, preposition: 1}| or \verb|{final: 0, preposition: 1}|. Another example is the contentWord parameter, which is used only for monosyllabic words that are not preceded by MPP preposition \verb|{initial: 1, final: 1, prevPreposition: 0}|. In addition, the parameters nextLong and prevInitial are taken into account only for a word-initial syllable of a polysyllabic word \verb|{initial: 1, final: 0}| or MPP preposition \verb|{preposition: 1}|. More such reductions are applied, resulting in only 12 recognised Syllable class instances.
+
+For example, the Syllable class instance for the third syllable (\emph{Zná}) of a line: \enquote{Aj! kdo zná ji, tu osobu} is:
+
+\begin{verbatim}
+{
+    initial: 1,
+    final: 1,
+    contentWord: 1,
+    preposition: 0,
+    prevPreposition: 0,
+    prevInitial: 1,
+    nextLong: 0
+}.
+\end{verbatim}
+
+\subsubsection{Metre generation}
+The next step of the algorithm is to take for each poem only the number of syllables in each line and generate all possible metres that could fit it. Not only standard syllabotonic metres are generated, but also syllabotonic imitations of quantitative syllabic strophes and syllabotonic imitations of the quantitative hexametre, pentametre, and elegiac couplet. Ghazal poems are generated as well. The V-positions are not distinguished and are represented as W-positions.
+
+\paragraph{Standard syllabotonic metres}
+The maximal number of syllables in one line \verb|max_syll| must be determined when generating all standard syllabotonic metres for a poem. All possible metres are then generated as strings of length \verb|max_syll| that match the regular expression~\eqref{eq:syllabotonic-regex}.
+
+This regular expression represents all valid combinations of Czech syllabotonic feet. For example, if \verb|max_syll| for a poem is equal to 6, the following metres are generated:
+
+\begin{verbatim}
+[‘SWSWSW’, ‘SWWSWS’, ‘SWSWWS’, ‘SWWSWW’, ‘WSWSWS’, ‘WSWSWW’, ‘WSWWSW’].
+\end{verbatim}
+
+For every metre generated, a two-dimensional array of metrical positions is created, where the metrical pattern of each line is a prefix of the generated metre. For metre \verb|'SWWSWS'| and a poem consisting of a 5-syllable line, a 6-syllable line, and a 3-syllable line, the following array is generated:
+
+\pagebreak
+
+\begin{verbatim}
+metre['SWWSWS'] = [
+    ['S', 'W', 'W', 'S', 'W'],
+    ['S', 'W', 'W', 'S', 'W', 'S'],
+    ['S', 'W', 'W']
+].
+\end{verbatim}
+
+\paragraph{Imitations of quantitative syllabic strophes}
+The algorithm supports the four most commonly imitated quantitative syllabic strophes: the Sapphic Stanza, the Third Asclepiad Stanza and two types of the Alcaic Strophe. When the poem meets the syllabic requirements and can be divided into one of these strophes, the algorithm includes this option in the generated metres. For the metrical patterns of the strophes, see Figure~\ref{fig:kveta-data-driven-strophes}.
+
+\begin{figure}[htpb]
+\centering
+\begin{verbatim}
+metre['sapphic'] = [
+    ['S', 'W', 'S', 'W', 'S', 'W', 'W', 'S', 'W', 'S', 'W'],
+    ['S', 'W', 'S', 'W', 'S', 'W', 'W', 'S', 'W', 'S', 'W'],
+    ['S', 'W', 'S', 'W', 'S', 'W', 'W', 'S', 'W', 'S', 'W'],
+    ['S', 'W', 'W', 'S', 'W']
+]
+
+metre['asclepiad'] = [
+    ['S', 'W', 'S', 'W', 'W', 'S', 'W', 'S', 'W', 'W', 'S', 'W', 'W'],
+    ['S', 'W', 'S', 'W', 'W', 'S', 'W', 'S', 'W', 'W', 'S', 'W', 'W'],
+    ['S', 'W', 'S', 'W', 'W', 'S', 'W'],
+    ['S', 'W', 'S', 'W', 'W', 'S', 'W', 'W']
+]
+
+metre['alcaicA'] = [
+    ['W', 'S', 'W', 'S', 'W', 'S', 'W', 'W', 'S', 'W', 'W'],
+    ['W', 'S', 'W', 'S', 'W', 'S', 'W', 'W', 'S', 'W', 'W'],
+    ['W', 'S', 'W', 'S', 'W', 'S', 'W', 'S', 'W'],
+    ['S', 'W', 'W', 'S', 'W', 'W', 'S', 'W', 'S', 'W']
+]
+
+metre['alcaicB'] = [
+    ['S', 'W', 'S', 'W', 'W', 'S', 'W', 'W', 'S', 'W', 'W'],
+    ['S', 'W', 'S', 'W', 'W', 'S', 'W', 'W', 'S', 'W', 'W'],
+    ['S', 'W', 'S', 'W', 'S', 'W', 'S', 'W', 'W'],
+    ['S', 'W', 'W', 'S', 'W', 'W', 'S', 'W', 'S', 'W']
+]
+\end{verbatim}
+\caption{Syllabotonic imitations of quantitative syllabic strophes: Metrical patterns}\label{fig:kveta-data-driven-strophes}
+\end{figure}
+
+\paragraph{Imitations of hexametre, pentametre and elegiac couplet}
+For a poem that imitates the quantitative hexametre, every line must match the hexametre regular expression~\eqref{eq:hexametre-regex}. That implies that the length of every line varies from 12 to 17 syllables. Moreover, when the length of the line lies between 13 and 16 syllables, there is more than one possible metrical pattern. There are five different patterns for lines of lengths 13 and 16 and ten patterns for lines of lengths 14 and 15. Therefore, a three-dimensional array instead of a~two-dimensional array must be generated. For a poem consisting of a 13-syllable line and a 12-syllable line, the following array is generated:
+
+% \pagebreak
+
+\begin{verbatim}
+metre['hexametre'] = [
+    [
+        ['S', 'W', 'W', 'S', 'W', 'S', 'W', 'S', 'W', 'S', 'W', 'S', 'W'],
+        ['S', 'W', 'S', 'W', 'W', 'S', 'W', 'S', 'W', 'S', 'W', 'S', 'W'],
+        ['S', 'W', 'S', 'W', 'S', 'W', 'W', 'S', 'W', 'S', 'W', 'S', 'W'],
+        ['S', 'W', 'S', 'W', 'S', 'W', 'S', 'W', 'W', 'S', 'W', 'S', 'W'],
+        ['S', 'W', 'S', 'W', 'S', 'W', 'S', 'W', 'S', 'W', 'W', 'S', 'W']
+    ],
+    [
+        ['S', 'W', 'S', 'W', 'S', 'W', 'S', 'W', 'S', 'W', 'S', 'W']
+    ]
+].
+\end{verbatim}
+
+For imitation of the quantitative pentametre, the situation is analogous. This time, all lines must match the pentametre regular expression~\eqref{eq:pentametre-regex}. Line lengths range from 10 to 15 syllables, again resulting in a three-dimensional array.
+
+In imitation of the elegiac couplet, all odd lines must match the hexametre regular expression, and all even lines must match the pentametre regular expression. Again, a three-dimensional array is returned.
+
+\paragraph{Ghazal poems}
+When a poem is identified as a ghazal poem, the algorithm splits the poem into two separate parts -- part without the radifs and a part containing only the radifs. Possible metrical patterns are generated for each part separately, and the final metrical patterns are returned as their Cartesian product.
+
+\subsubsection{Metre assignment}
+\paragraph{Metrical coefficient}
+To be able to assign metres, the algorithm must pre-calculate the values of \enquote{metrical coefficient} from the corpus data. For every Syllable class, the metrical coefficient value is represented as the conditional probability that the Syllable class is realised by a strong or weak position in the corresponding metrical pattern. For the $j^{th}$ syllable of the $i^{th}$ line of a poem, and a metre $w$ (which was generated for this poem as a possible metre in the previous step of the algorithm) let $\mu_{w,i,j}$ be the value of the metrical coefficient for that syllable and metre $w$, $\sigma_{i,j}$ the Syllable class assigned to that syllable and $x_{w,i,j}$ the strong or weak position in the metrical pattern of metre $w$.
+
+The authors of the paper use Bayes' Theorem (under a naive independence assumption):
+
+\begin{equation}
+    \mu_{w,i,j} = P(x_{w,i,j}|\sigma_{i,j}) = \frac{P(\sigma_{i,j}|x_{w,i,j})\cdot P(x_{w,i,j})}{P(\sigma_{i,j}|S) + P(\sigma_{i,j}|W)}
+\end{equation}
+
+and argue that since $x_{w,i,j}$ is a binary value with possible values S or W, the probability of which may be considered equal, they can internally compute $\mu_{w,i,j}$ just as:
+\begin{equation}\label{eq:kveta-data-driven-0}
+    \tilde{\mu}_{w,i,j} = \frac{P(\sigma_{i,j}|x_{w,i,j})}{P(\sigma_{i,j}|S) + P(\sigma_{i,j}|W)}.
+\end{equation}
+
+Moreover, the algorithm also takes into account that the probabilities can vary greatly depending on the time period or individual authors. Therefore, for each author, the Yates $\chi^2$ test is performed to determine whether the probabilities obtained from his work differ statistically significantly from the probabilities of the entire corpus. If they do, his values of the metrical index are set as a geometric mean of the probabilities from the whole corpus and of his probabilities ($P_A$) with a weight ratio of 1 to 3:
+
+\begin{equation}\label{eq:kveta-data-driven-1}
+    \mu_{w,i,j} = \sqrt[4]{P(x_{w,i,j}|\sigma_{i,j})\cdot(P_A(x_{w,i,j}|\sigma_{i,j}))^3}.
+\end{equation}
+
+\paragraph{Metre selection}
+When selecting a metre, the metrical coefficients of the individual line patterns and the overall metrical coefficient must be determined for every generated metre.
+
+For the $i^{th}$ line of a poem and a metre $w$, the metrical coefficient of the line pattern $L_{w,i}$ represents the probability of this line being realised by the metre $w$. It is computed as a product of metrical coefficients of all individual syllables on the line, and it is normalised by the length of the line denoted as $n_i$, so lines of different lengths are comparable:
+
+\begin{equation}\label{eq:kveta-data-driven-2}
+    L_{w,i} = \sqrt[n_i]{\prod_{j=1}^{n_i}\tilde{\mu}_{w,i,j}}.
+\end{equation}
+
+In the case of the three-dimensional hexametre, pentametre, or elegiac couplet arrays, the line pattern with the highest value of $L_{w,i}$ is selected (out of $k$ possible patterns):
+
+\begin{equation}\label{eq:kveta-data-driven-3}
+    L_{w,i} = \max\{L_{w,i,1}, L_{w,i,2}, \ldots, L_{w,i,k}\}.
+\end{equation}
+
+The overall metrical coefficient $T_w$ of the metre $w$ is calculated as a geometric mean of the metrical coefficients of all line patterns:
+
+\begin{equation}\label{eq:kveta-data-driven-4}
+    T_w = \sqrt[m]{\prod_{i=1}^{m}L_{w,i}},
+\end{equation}
+
+where $m$ is the number of lines.
+
+Finally, the metre $w$ with the highest metrical coefficient $T_w$ is selected. Inside KVĚTA, various checks must be passed to annotate the poem automatically. For example, if the value of $T_w$ or some $L_{w,i}$ is too low, or the standard deviation of $L_{w,1}, L_{w,2}, \ldots$ is too high, manual control is required. This approach minimises the incorrect annotations of polymetric or non-syllabotonic poems and reveals possible mistakes in phonetic transcriptions. When the same metrical pattern is generated with different metre names (e.g.~hexametre and trochee), standard syllabotonic metres are preferred.
+
+\subsubsection{Conclusion}
+In conclusion, this algorithm seems to be more suitable for metrical tagging of Czech syllabotonic verse than the rule-based one. It can distinguish whether a monosyllable is accented or not, it allows for more advanced rules as e.g.~the MPPs are also taken into account, and it also tags hexametres and pentametres, which are tagged within the Corpus of Czech Verse. Again, polymetric tagging of poems is not possible.
+
+\section{Machine learning approaches}\label{section:ml-approaches}
+The metrical analysis can be modelled as a sequence tagging task and solved using machine learning. In the paper~\cite{MetricalTaggingInTheWild}, conditional random fields, BERT model and BiLSTM-CRF model are tested on English and German verse corpora. The paper~\cite{ComparisonFeatureBasedNeualScansion} tests perceptron, hidden Markov model (HMM), conditional random fields, and BiLSTM-CRF on English and Spanish verse corpora. Both articles evaluate syllable-level and line-level accuracies and obtain the best results using BiLSTM-CRF.
+
+\subsection{BERT}
+The authors of~\cite{MetricalTaggingInTheWild} assume that BERT's transformer architecture cannot compete against other models, possibly because of an improper syllable representation, as BERT's word-piece tokenizer creates word chunks that are not equivalent to syllables.
+
+Another experiment is performed in which BERT should learn the verse label (e.g.~iambic pentameter) for a given sequence of word tokens. BERT detects frequent classes like the iambic pentameter or the trochaic tetrameter well but fails to learn measures other than iamb, trochee and irregular verse with inversions. The authors assume that BERT probably mainly predicts based on the length of lines in this setting.
+
+\subsection{BiLSTM-CRF}
+In~\cite{MetricalTaggingInTheWild}, individual syllables are sent to the input and custom syllable embeddings are pre-trained from verse corpora using the Word2Vec algorithm. BiLSTM-CRF uses three BiLSTM layers with 100 recurrent units in each layer and uses a linear-chain CRF classifier. Variational dropout is used, with 25~\% dropped in output and recurrent connections. No character-based representation of syllables is used, as it, according to the authors, hurts both speed and accuracy.
+
+Unlike the intuition denoted in~\cite{MetricalTaggingInTheWild}, in~\cite{ComparisonFeatureBasedNeualScansion}, BiLSTM-CRF is used with BiLSTM character-based representation of input tokens. Three different input types are tested: individual syllables, word tokens, and individual syllables with word boundaries. For English, the best results are obtained for individual syllables with word boundaries in the input. For Spanish, the best results are obtained when word tokens are inputted.

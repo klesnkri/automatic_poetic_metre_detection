@@ -1,0 +1,58 @@
+\chapter{Results}\label{chap:results}
+
+\section{Accuracies}
+When testing the metrical analysis approaches implemented, the following accuracies are taken into account:
+\begin{description}
+    \item[Syllable-level accuracy]: Testing for all individual syllables whether the metrical position assigned to that syllable is the same as the referential.
+    \item[Line-level accuracy]: Testing for all individual lines whether the metrical pattern assigned to that line is the same as the referential.
+    \item[Poem-level accuracy]: Testing for all individual poems whether the metrical pattern assigned to that poem is the same as the referential.
+\end{description}
+
+For BiLSTM-CRF models with token input, syllable accuracies cannot be evaluated because the reference syllable counts and predicted syllable counts tend to differ.
+
+\section{Results}
+For the results on both datasets used (see Section~\ref{section:used-data-sets}), see Tables~\ref{tab:results-data-set-0}, \ref{tab:results-data-set-1}.
+
+It can be seen that BiLSTM-CRF represents a great success, as with the best input configurations, it returns better results than the KVĚTA reimplementation, comparing all evaluated accuracies (syllable-level, line-level, and poem-level).
+
+Not surprisingly, the syllable input returns better results than the token input, especially when comparing the poem-level accuracy. However, when only the line-level accuracy is looked at, the results for token input are not that bad. Therefore, these results seem promising; as for token input, prior syllabification is not needed during preprocessing. An interesting observation is that inputting a lemma significantly improves the results for token input. Generally, the more additional features inputted (author of a poem, year of publication, POS tag, lemma), the better the results.
+
+However, the most interesting finding of this work is how much inputting sequences representing whole poems rather than poem lines improves the results (especially the poem-level accuracy and perhaps surprisingly even the syllable-level accuracy). The best results are obtained inputting sequences representing whole poems with all additional features and poem line indices on the input. Poem line indices allow the model to distinguish different lines of a poem.
+
+\begin{table}[htpb]
+\centering
+\caption[Results for the first dataset]{Results for the first dataset (no polymetric verses, no verse multimetry)}\label{tab:results-data-set-0}
+\begin{tabular}{|c||c|c|c|}\hline
+    Approach & Syll. acc. & Line acc. & Poem acc.\\\hline\hline
+    KVĚTA reimplementation & 97.02 & 81.88 & 69.83\\\hline
+    \makecell{BiLSTM-CRF with X-SAMPA syll. embeddings\\Input: X-SAMPA syllables\\Max epochs: 15} & 97.93 & 95.67 & 66.78\\\hline
+    \makecell{BiLSTM-CRF with X-SAMPA syll. embeddings\\Input: X-SAMPA syllables, authors, years\\Max epochs: 15} & 98.14 & 95.97 & 66.29\\\hline
+    \makecell{BiLSTM-CRF with X-SAMPA syll. embeddings\\Input: X-SAMPA syllables, authors, years, POS tags\\Max epochs: 15} & 98.69 & 96.85 & 72.34\\\hline
+    \makecell{BiLSTM-CRF with X-SAMPA syll. embeddings\\Input: X-SAMPA syllables, authors, years, POS tags,\\lemmas\\Max epochs: 15} & 98.74 & 96.94 & 72.98\\\hline
+    \makecell{BiLSTM-CRF with X-SAMPA syll. embeddings\\poem as line\\Input: line idxs, X-SAMPA syllables, authors, years,\\POS tags, lemmas\\Max epochs: 15} & \textbf{99.71} & \textbf{99.17} & \textbf{92.51}\\\hline
+    \makecell{BiLSTM-CRF with tokens embeddings\\Input: tokens\\Max epochs: 15} & - & 74.38 & 8.69\\\hline
+    \makecell{BiLSTM-CRF with tokens embeddings\\Input: tokens, authors, years\\Max epochs: 15} & - & 75.91 & 10.29\\\hline
+    \makecell{BiLSTM-CRF with tokens embeddings\\Input: tokens, authors, years, POS tags\\Max epochs: 15} & - & 76.94 & 11.17\\\hline
+    \makecell{BiLSTM-CRF with tokens embeddings\\Input: tokens, authors, years, POS tags, lemmas\\Max epochs: 15} & - & 90.01 & 31.83\\\hline
+    \makecell{BiLSTM-CRF with tokens embeddings\\poem as line\\Input: line idxs, tokens, authors, years, POS tags,\\lemmas\\Max epochs: 15} & - & 95.47 & 55.74\\\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htpb]
+\centering
+\caption[Results for the second dataset]{Results for the second dataset (polymetric verses, no verse multimetry)}\label{tab:results-data-set-1}
+\begin{tabular}{|c||c|c|c|}\hline
+    Approach & Syll. acc. & Line acc. & Poem acc.\\\hline\hline
+    KVĚTA reimplementation & 96.08 & 80.64 & 68.26\\\hline
+    \makecell{BiLSTM-CRF with X-SAMPA syll. embeddings\\Input: X-SAMPA syllables\\Max epochs: 15} & 97.78 & 95.31 & 62.91\\\hline
+    \makecell{BiLSTM-CRF with X-SAMPA syll. embeddings\\Input: X-SAMPA syllables, authors, years\\Max epochs: 15} & 98.21 & 96.09 & 67.20\\\hline
+    \makecell{BiLSTM-CRF with X-SAMPA syll. embeddings\\Input: X-SAMPA syllables, authors, years, POS tags\\Max epochs: 15} & 98.72 & 96.96 & 73.41\\\hline
+    \makecell{BiLSTM-CRF with X-SAMPA syll. embeddings\\Input: X-SAMPA syllables, authors, years, POS tags,\\lemmas\\Max epochs: 15} & 98.83 & 97.12 & 73.06\\\hline
+    \makecell{BiLSTM-CRF with X-SAMPA syll. embeddings\\poem as line\\Input: line idxs, X-SAMPA syllables, authors, years,\\POS tags, lemmas\\Max epochs: 15} & \textbf{99.61} & \textbf{98.86} & \textbf{90.40}\\\hline
+    \makecell{BiLSTM-CRF with tokens embeddings\\Input: tokens\\Max epochs: 15} & - & 72.14 & 7.56\\\hline
+    \makecell{BiLSTM-CRF with tokens embeddings\\Input: tokens, authors, years\\Max epochs: 15} & - & 76.60 & 9.64\\\hline
+    \makecell{BiLSTM-CRF with tokens embeddings\\Input: tokens, authors, years, POS tags\\Max epochs: 15} & - & 78.40 & 11.27\\\hline
+    \makecell{BiLSTM-CRF with tokens embeddings\\Input: tokens, authors, years, POS tags, lemmas\\Max epochs: 15} & - & 91.42 & 35.39\\\hline
+    \makecell{BiLSTM-CRF with tokens embeddings\\poem as line\\Input: line idxs, tokens, authors, years, POS tags,\\lemmas\\Max epochs: 15} & - & 95.91 & 58.98\\\hline
+\end{tabular}
+\end{table}

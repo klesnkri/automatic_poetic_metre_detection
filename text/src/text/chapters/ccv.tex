@@ -1,0 +1,122 @@
+\chapter{Corpus of Czech Verse}\label{chap:ccv}
+
+\begin{chapterabstract}
+This chapter presents the Corpus of Czech Verse.
+\end{chapterabstract}
+
+The Corpus of Czech Verse is lemmatised, phonetically, morphologically, metrically, rhythmically, and rhyme annotated corpus of Czech poetry from the 19\textsuperscript{th} century and the beginning of the 20\textsuperscript{th} century.~\cite{KorpusCeskehoVerse} It contains 66 428 poems, 2 310 917 lines and 12 636 867 words.~\cite{GitCorpusCzechVerse} It is one of the largest poetic corpora in the world.~\cite{KorpusCeskehoVerse}
+
+\section{Poem-level annotation}
+Every poem record stored within the corpus starts with metadata containing information about the poetic book in which the poem was published and the author of the poem. The poem itself is then encoded as a list of lists that divide the poem into stanzas and lines. For a concrete example of the poem-level annotation, see Figure~\ref{fig:ccv-poem-level-annotation}.~\cite{GitCorpusCzechVerse}
+
+\begin{figure}[htpb]
+    \centering
+    \begin{minted}[tabsize=2,breaklines]{js}
+{
+    # Metadata on the author of the poem
+    'p_author': {
+        'born': 1821, # The year author was born
+        'died': 1856, # The year author died
+        'name': 'Havlíček Borovský, Karel', # Name as printed in the book (it differs from 'identity' in case of a pen name)
+        'identity': 'Havlíček Borovský, Karel' # Real name of the author
+        },
+    # Metadata on book and poem
+    'biblio': {
+        'motto_aut': None, # Author of the motto
+        'b_subtitle': 'Jehly, špičky, sochory a kůly  stesal, zkoval, zostřil, sebral  k vůli  vojně s hloupostí a zlobou místo šavel  Borovský Havel.', # Subtitle of the book
+        'publisher': 'Dolenský, Antonín; Unie', # Publisher of the book
+        'edition': '[1.]', # Edition description
+        'motto': None, # Motto of the book
+        'p_title': 'Pražské Vysoké Školy.', # Title of the poem
+        'place': 'Praha', # Place where published
+        'dedication': None, # Dedication of the book
+        'b_title': 'Epigramy', # Title of the book
+        'pages': '[80]', # Page range of the poem
+        'year': '1921', # Year when published
+        'signature': 'ÚČL AV ČR; 52 VIII 2' # Library info
+    },
+    'book_id': '0176', # ID of the book
+    'poem_id': '0001-0004-0000-0001-0000', # ID of the poem
+    # Metadata on the author or the editor of the entire book
+    'b_author': {
+        'born': 1821, # The year author was born
+        'died': 1856, # The year author died
+        'name': 'Havlíček Borovský, Karel', # Name as printed in the book (it differs from 'identity' in case of a pen name)
+        'identity': 'Havlíček Borovský, Karel'}, # Real name of the author
+    # The poem itself encoded as a list of lists (stanzas x lines)
+    'body': [
+        [
+            "LINE-LEVEL ANNOTATION",
+            ...
+        ],
+        [...]
+    ]
+}
+    \end{minted}
+    \caption{Corpus of Czech Verse: Poem-level annotation}\label{fig:ccv-poem-level-annotation}
+\end{figure}
+
+\section{Line-level annotation}
+For every line in a poem, the record contains the exact text of the line, a rhyme annotation, and a~dictionary that holds all the punctuation. Stress (rhythm) is encoded as a pattern of accented and non-accented syllables. The assigned metres are stored inside a list, allowing for the annotation of multimetric verses. For all possible values of the metrical annotation parameters, see Table~\ref{tab:ccv-metres}. For an example of the line-level annotation, see Figure~\ref{fig:ccv-line-level-annotation}.~\cite{GitCorpusCzechVerse}
+
+\begin{table}[htpb]
+\centering
+\caption{Corpus of Czech Verse: Metrical annotation parameters values}\label{tab:ccv-metres}
+\begin{tabular}{|c||l|}\hline
+    Parameter & Possible values\\\hline\hline
+    Metre & \begin{tabular}{@{}l@{}}J (iamb)\\T (trochee)\\D (dactyl)\\A (amphibrach)\\X (dactylotrochee)\\Y (dactylotrochee with anacrusis)\\hexameter\\pentameter\\N (not recognized)\\\end{tabular}\\\hline
+    Clause & \begin{tabular}{@{}l@{}}f (feminine)\\m (masculine)\\a (acatalectic)\end{tabular}\\\hline
+    Foot & Number of feet\\\hline
+    Pattern & Pattern of strong (S), weak (W), and undetermined (X) positions\\\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[htpb]
+\centering
+\begin{minted}[tabsize=2,breaklines]{js}
+{
+    # Text of the line
+    'text': 'Dvě fakulty v Klementině,',
+    # Dict holding punctuation marks
+    # Punctuation marks are stored under the key which corresponds to the index of a word which the punctuation precedes
+    'punct': {'4': ','},
+    # List of words and their metadata
+    'words': ["WORD-LEVEL ANNOTATION", ...],
+    # Rhyme index (the lines that rhyme all share the same value here)
+    'rhyme': 1,
+    # List of metres assigned to the line
+    'metre': [
+        {
+            'foot': '4', # Number of feet
+            'clause': 'f', # Type of line ending
+            'pattern': 'SWSWSWSW', # Pattern of strong and weak positions 
+            'type': 'T' # Type of metre
+        }
+    ],
+    'stress': '11001000' # Bitstring encoding accented and non-accented syllables
+}
+\end{minted}
+\caption{Corpus of Czech Verse: Line-level annotation}\label{fig:ccv-line-level-annotation}
+\end{figure}
+
+At this moment, only syllabotonic verses are metrically annotated. Quantitative, syllabic, and free verses, which also occur in Czech poetry, are classified as \enquote{not recognised}.~\cite{CorpusCzechVerse} However, annotated syllabotonic verses represent the majority of all verses in the corpus -- 60 458 (91.01~\%) annotated poems, 2 088 508 (90.38~\%) annotated lines.~\cite{GitCorpusCzechVerse}
+
+In terms of verse multimetry, 12 182 (0.53~\%) lines have more metres assigned. When examining poem polymetry, 2 619 (3.94~\%) poems contain more metres.~\cite{GitCorpusCzechVerse}
+
+\section{Word-level annotation}
+On the word level, the corpus provides a lemma (the basic dictionary form), phonetic transcription, and a morphological tag (in the Prague positional tagset format~\cite{MorphTags}) that contains information on various grammatical categories (part of speech, number, case \ldots). The authors published the phonetic transcription using two formats.~\cite{GitCorpusCzechVerse} The common X-SAMPA~\cite{X-SAMPA} format and their own simplified PhoEBE~\cite{PHoEBE} format. For a concrete example of word-level annotation, see Figure~\ref{fig:ccv-word-level-annotation}.
+
+\begin{figure}[htpb]
+\centering
+\begin{minted}[tabsize=2,breaklines]{js}
+{
+    'token_lc': 'karolínské', # Lowercased token
+    'xsampa': 'karoli:nskE:', # X-SAMPA phonetic transcription
+    'morph': 'AANS1----1A-----', # Morphological tag
+    'phoebe': 'karolInskE', # PHoEBE phonetic transcription
+    'token': 'Karolínské', # Word as appears in the text
+    'lemma': 'karolínský' # Lemma
+}
+\end{minted}
+\caption{Corpus of Czech Verse: Word-level annotation}\label{fig:ccv-word-level-annotation}
+\end{figure}

@@ -1,0 +1,7 @@
+notebook
+pandas
+scikit-learn
+pyphen
+gensim
+python-dotenv
+regex

@@ -1,0 +1,324 @@
+%% This is the ctufit-thesis example file. It is used to produce theses
+%% for submission to Czech Technical University, Faculty of Information Technology.
+%%
+%% Get the newest version from
+%% https://gitlab.fit.cvut.cz/theses-templates/FITthesis-LaTeX
+%%
+%%
+%% Copyright 2021, Eliska Sestakova and Ondrej Guth
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public Licenese, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%  https://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%%
+%% This work has the LPPL maintenance status `maintained'.
+%%
+%% The current maintainer of this work is Ondrej Guth.
+%% Contact ondrej.guth@fit.cvut.cz for bug reports.
+%% Alternatively, submit bug reports into the tracker at
+%% https://gitlab.fit.cvut.cz/theses-templates/FITthesis-LaTeX/issues
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CLASS OPTIONS
+% language: czech/english/slovak
+% thesis type: bachelor/master/dissertation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[english,bachelor,unicode]{ctufit-thesis}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ENGLISH PARAGRAPHS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{parskip}
+\setlength{\parindent}{0pt} % anglicke odstavce
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% NUM OF SUBSECTIONS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{titlesec}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\setcounter{secnumdepth}{2} % numbering sections
+\setcounter{tocdepth}{2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% VERSES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{verse}
+
+\newcommand{\su}[1]{\scansion{\smallerU}{#1}}
+\newcommand{\sdash}[1]{\scansion{\smallerdash}{#1}}
+\newcommand{\spipe}[1]{\scansion{\smallerpipe}{#1}}
+\newcommand{\shash}[1]{\scansion{\smallerhash}{#1}}
+\newcommand{\sS}[1]{\scansion{\smallerS}{#1}}
+\newcommand{\sV}[1]{\scansion{\smallerV}{#1}}
+\newcommand{\sW}[1]{\scansion{\smallerW}{#1}}
+
+\newcommand{\scansion}[2]{%
+  \begingroup
+  \renewcommand{\arraystretch}{0}%
+  \begin{tabular}[b]{@{}c@{}}
+  \makebox[0pt]{#1}\\[0.5ex]
+  \vphantom{T}#2
+  \end{tabular}%
+  \endgroup
+}
+\newcommand{\smallerU}{$\scriptstyle{U}$}
+\newcommand{\smallerdash}{$\scriptstyle-$}
+\newcommand{\smallerpipe}{$\scriptstyle|$}
+\newcommand{\smallerhash}{$\scriptstyle\#$}
+\newcommand{\smallerS}{$\scriptstyle{S}$}
+\newcommand{\smallerV}{$\scriptstyle{V}$}
+\newcommand{\smallerW}{$\scriptstyle{W}$}
+
+\usepackage{ulem} % Underlining
+\normalem
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TYPE ALGORITHMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{makecell}
+\usepackage{multirow}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FILL IN THIS INFORMATION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ctufittitle{Automatic poetic metre detection} % replace with the title of your thesis
+\ctufitauthorfull{Kristýna Klesnilová} % replace with your full name (first name(s) and then family name(s) / surname(s)) including academic degrees
+\ctufitauthorsurnames{Klesnilová} % replace with your surname(s) / family name(s)
+\ctufitauthorgivennames{Kristýna} % replace with your first name(s) / given name(s)
+\ctufitsupervisor{Ing.\,Karel Klouda,\,Ph.D.} % replace with name of your supervisor/advisor (include academic degrees)
+\ctufitdepartment{Department of Applied Mathematics} % replace with the department of your defence
+\ctufityear{2022} % replace with the year of your defence
+\ctufitdeclarationplace{Prague} % replace with the place where you sign the declaration
+\ctufitdeclarationdate{\today} % replace with the date of signature of the declaration
+
+\ctufitabstractENG{This work is devoted to automatic metrical analysis of Czech syllabotonic verse metrically tagged inside a large poetic corpus -- the Corpus of Czech Verse. First, it reimplements the existing data-driven approach used by a program called KVĚTA. Later, it models the problem as a sequence tagging task and solves it using machine learning. The BiLSTM-CRF model is used, representing the current state of the art for many sequence tagging tasks. Many different input configurations are tested. In all experiments, the inputted syllables or word tokens are represented by Word2Vec word embeddings trained on training data. The results are evaluated by computing three different accuracies of the predictions: syllable-level accuracy, line-level accuracy, and poem-level accuracy. It is shown that using BiLSTM-CRF represents a great success. With the best input configurations, it produces better results than the KVĚTA reimplementation, with predictions achieving 99.61\% syllable accuracy, 98.86\% line accuracy, and 90.40\% poem accuracy. The most interesting finding is that the best results are obtained by inputting sequences representing whole poems instead of individual poem lines.}
+\ctufitabstractCZE{Tato práce se zabývá automatickou metrickou analýzou českého sylabotonického verše, jenž je metricky otagován ve velkém korpusu básní – v Korpusu českého verše. Práce nejprve reimplementuje přístup založený na datech, který využívá program s názvem KVĚTA. Poté si metrickou analýzu namodeluje jako úlohu tagování sekvencí a řeší ji pomocí strojového učení. Je trénován model BiLSTM-CRF, který reprezentuje aktuálně nejlepší architekturu pro většinu klasických úloh tagování sekvencí. Je otestováno mnoho různých vstupních konfigurací. Ve všech experimentech jsou slabiky nebo tokeny slov na vstupu reprezentovány pomocí Word2Vec embeddingů natrénovaných na trénovacích datech. Výsledky jsou vyhodnoceny pomocí spočítání tří různých přesností predikce: přesnosti pro jednotlivé slabiky, přesnosti pro jednotlivé řádky básní a přesnosti pro celé básně. Je ukázáno, že použití modelu BiLSTM-CRF představuje velký úspěch. S nejlepšími vstupními konfiguracemi vrací BiLSTM-CRF lepší výsledky než reimplementace programu KVĚTA s~predikcemi dosahujícími 99.61\% přesnosti pro jednotlivé slabiky, 98.86\% přesnosti pro jednotlivé řádky básní a 90.40\% přesnosti pro celé básně. Nejzajímavější zjištění představuje fakt, že nejlepších výsledků je dosaženo pro vstupní sekvence reprezentují celé básně namísto jednotlivých řádků básní.}
+
+% 5-12 slov
+\ctufitkeywordsENG{automatic metrical analysis of verse, Czech syllabotonic verse, Corpus of Czech Verse, KVĚTA, BiLSTM-CRF, Word2Vec}
+\ctufitkeywordsCZE{automatická metrická analýza verše, český sylabotonický verš, Korpus českého verše, KVĚTA, BiLSTM-CRF, Word2Vec}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END FILL IN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CUSTOMIZATION of this template
+% Skip this part or alter it if you know what you are doing.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{iftex}[2020/03/06]
+\iftutex % XeLaTeX and LuaLaTeX
+    \RequirePackage{ellipsis}[2020/05/22] %ellipsis workaround for XeLaTeX
+\else
+    \RequirePackage[utf8]{inputenc}[2018/08/11] %this file encoding
+    \RequirePackage{lmodern}[2009/10/30] % vector flavor of Computer Modern font
+\fi
+
+% hyperlinks
+\RequirePackage[pdfpagelayout=TwoPageRight,colorlinks=false,allcolors=decoration,pdfborder={0 0 0.1}]{hyperref}[2020-05-15]
+
+% uncomment the following to hide all hyperlinks
+% \RequirePackage[pdfpagelayout=TwoPageRight,hidelinks]{hyperref}[2020-05-15]
+
+\RequirePackage{pdfpages}[2020/01/28]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CUSTOMIZATION of this template END
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+% DEMO CONTENTS SETTINGS
+% You may choose to modify this part.
+%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{dirtree}
+\usepackage{lipsum,tikz}
+\usepackage{csquotes}
+\usepackage[style=iso-numeric]{biblatex}
+\addbibresource{text/bib-database.bib}
+\usepackage{listings} % typesetting of sources
+\usepackage{minted} % typesetting of sources
+\counterwithin{listing}{chapter}
+
+%theorems, definitions, etc.
+\theoremstyle{plain}
+\newtheorem{theorem}{Věta}
+\newtheorem{lemma}[theorem]{Tvrzení}
+\newtheorem{corollary}[theorem]{Důsledek}
+\newtheorem{proposition}[theorem]{Návrh}
+\newtheorem{definition}[theorem]{Definice}
+\theoremstyle{definition}
+\newtheorem{example}[theorem]{Příklad}
+\theoremstyle{remark}
+\newtheorem{note}[theorem]{Poznámka}
+\newtheorem*{note*}{Poznámka}
+\newtheorem{remark}[theorem]{Pozorování}
+\newtheorem*{remark*}{Pozorování}
+\numberwithin{theorem}{chapter}
+%theorems, definitions, etc. END
+%%%%%%%%%%%%%%%%%%%%%%
+% DEMO CONTENTS SETTINGS END
+%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document} 
+\frontmatter\frontmatterinit % do not remove these two commands
+
+\includepdf{assignment-include.pdf} % replace that file with your thesis assignment provided by study office
+
+\thispagestyle{empty}\cleardoublepage\maketitle % do not remove these three commands
+
+\imprintpage % do not remove this command
+
+\tableofcontents % do not remove this command
+%%%%%%%%%%%%%%%%%%%%%%
+% list of other contents: figures, tables, code listings, algorithms, etc.
+% add/remove commands accordingly
+%%%%%%%%%%%%%%%%%%%%%%
+\listoffigures % list of figures
+\begingroup
+\let\clearpage\relax
+\listoftables % list of tables
+% \listoflistings % list of source code listings generated by the listings package
+% \listoflistings % list of source code listings generated by the minted package
+\endgroup
+%%%%%%%%%%%%%%%%%%%%%%
+% list of other contents END
+%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%
+% ACKNOWLEDGMENT
+% FILL IN / MODIFY
+% This is a place to thank people for helping you. It is common to thank your supervisor.
+%%%%%%%%%%%%%%%%%%%
+\begin{acknowledgmentpage}
+    In the first place, I would like to express sincere gratitude to my supervisor, Ing.\,Karel Klouda,\,Ph.D., for all his excellent advice and constant guidance in writing this thesis. Next, I would like to thank my family and friends for their support during my studies. Especially to all the amazing friends from CHS, who made my studies much more fun.
+\end{acknowledgmentpage} 
+%%%%%%%%%%%%%%%%%%%
+% ACKNOWLEDGMENT END
+%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%
+% DECLARATION
+% FILL IN / MODIFY
+%%%%%%%%%%%%%%%%%%%
+% INSTRUCTIONS
+% ENG: choose one of approved texts of the declaration. DO NOT CREATE YOUR OWN. Find the approved texts at https://courses.fit.cvut.cz/SFE/download/index.html#_documents (document Declaration for FT in English)
+% CZE/SLO: Vyberte jedno z fakultou schvalenych prohlaseni. NEVKLADEJTE VLASTNI TEXT. Schvalena prohlaseni najdete zde: https://courses.fit.cvut.cz/SZZ/dokumenty/index.html#_dokumenty (prohlášení do ZP)
+\begin{declarationpage}
+I hereby declare that the presented thesis is my own work and that I have cited all
+sources of information in accordance with the Guideline for adhering to ethical
+principles when elaborating an academic final thesis.
+
+I acknowledge that my thesis is subject to the rights and obligations stipulated by the
+Act No. 121/2000 Coll., the Copyright Act, as amended, in particular that the Czech
+Technical University in Prague has the right to conclude a license agreement on the
+utilization of this thesis as a school work under the provisions of Article 60 (1) of the Act.
+\end{declarationpage}
+%%%%%%%%%%%%%%%%%%%
+% DECLARATION END
+%%%%%%%%%%%%%%%%%%%
+
+\printabstractpage % do not remove this command
+
+%%%%%%%%%%%%%%%%%%%
+% SUMMARY
+% FILL IN / MODIFY
+% OR REMOVE ENTIRELY (upon agreement with your supervisor)
+% (appropriate to remove in most theses)
+%%%%%%%%%%%%%%%%%%%
+% \begin{summarypage}
+% \section*{Summary section}
+
+% \lipsum[1][1-8]
+
+% \section*{Summary section}
+
+% \lipsum[2][1-6]
+
+% \section*{Summary section}
+
+% \lipsum[3]
+
+% \section*{Summary section}
+
+% \lipsum[2]
+
+% \section*{Summary section}
+
+% \lipsum[1][1-8] Lorem lorem lorem.
+% \end{summarypage}
+%%%%%%%%%%%%%%%%%%%
+% SUMMARY END
+%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%
+% ABBREVIATIONS
+% FILL IN / MODIFY
+% OR REMOVE ENTIRELY
+% List the abbreviations in lexicography order.
+%%%%%%%%%%%%%%%%%%%
+\chapter{List of abbreviations}
+	
+\begin{tabular}{rl}
+POS & Part of speech\\
+NER & Named entity recognition\\
+RNN & Recurrent neural network\\
+LSTM & Long short-term memory\\
+BiLSTM & Bidirectional LSTM\\
+CRF & Conditional random fields\\
+LSTM-CRF & LSTM network with a CRF layer\\
+BiLSTM-CRF & Bidirectional LSTM network with a CRF layer\\
+CNN & Convolutional neural network\\
+SGD & Stochastic gradient descent\\
+HMM & Hidden Markov model\\
+MPP & Monosyllabic preposition proper
+\end{tabular}
+%%%%%%%%%%%%%%%%%%%
+% ABBREVIATIONS END
+%%%%%%%%%%%%%%%%%%%
+
+\mainmatter\mainmatterinit % do not remove these two commands
+
+%%%%%%%%%%%%%%%%%%%
+% THE THESIS
+% MODIFY ANYTHING BELOW THIS LINE
+%%%%%%%%%%%%%%%%%%%
+
+\include{text/chapters/introduction}
+\include{text/chapters/verse_theory}
+\include{text/chapters/ccv}
+\include{text/chapters/ml_theory}
+\include{text/chapters/metrical_analysis}
+\include{text/chapters/implementation}
+\include{text/chapters/results}
+\include{text/chapters/conclusion}
+
+% \appendix\appendixinit % do not remove these two commands
+
+% \include{text/appendix} % include `appendix.tex' from `text/' subdirectory
+
+\backmatter % do not remove this command
+
+\printbibliography % print out the BibLaTeX-generated bibliography list
+
+\include{text/medium} % include `medium.tex' from `text/' subdirectory
+
+\end{document}

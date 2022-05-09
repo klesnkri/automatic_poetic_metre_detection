@@ -1,0 +1,20 @@
+% Do not forget to include Introduction
+%---------------------------------------------------------------
+\chapter*{Introduction}\addcontentsline{toc}{chapter}{Introduction}\markboth{Introduction}{Introduction}
+%---------------------------------------------------------------
+\setcounter{page}{1}
+
+Metrical analysis of verse is an important versology task that consists of analysing a poem and deciding in which metre it is written. This task is challenging not only because of the complexity of its subtasks (splitting a word into syllables, deciding whether a syllable is accented or long \ldots) but also due to the fact that poets -- as all artists -- tend to be creative and do not always follow the metrical norms precisely. Therefore, all algorithms and proposed approaches must take these \enquote{creative mistakes} into account.
+
+In the past, metrical analysis had to be performed only algorithmically using rule-based approaches. Nowadays, there exist large corpora containing many semi-automatically tagged poems, and thanks to that, data-driven approaches are possible. In this work, one such corpus is used -- the Corpus of Czech Verse~\cite{CorpusCzechVerse}. This work reimplements the statistical approach to the metrical analysis of Czech syllabotonic verse as performed within the Czech verse processing system KVĚTA, which was developed by the authors of the Corpus of Czech Verse. Afterwards, the task is modelled as a sequence tagging task, and further experiments are performed using a state-of-the-art machine learning approach -- the BiLSTM-CRF model for sequence tagging. The use of this model has been recently proposed by versology researchers~\cite{ComparisonFeatureBasedNeualScansion}, but it has not yet been tested on the Czech syllabotonic verses inside the Corpus of Czech Verse.
+
+\section*{Motivation}
+The results of this thesis will be beneficial to versology researchers, as the BiLSTM-CRF model is used for the first time with Czech syllabotonic verse. If this work proposes some new input configurations for the BiLSTM-CRF model, the configurations may be beneficial even for researchers working with verses written in other languages.
+
+\section*{Thesis structure}
+This work begins with a theoretical background. It introduces necessary concepts from the theory of verse and machine learning (Chapters~\ref{chap:verse-theory} and~\ref{chap:ml-theory}), describes the Corpus of Czech Verse (Chapter~\ref{chap:ccv}) and presents the metrical analysis pipeline with all its subtasks and possible approaches to solve them (Chapter~\ref{chap:metrical-analysis}). Later, it continues with a practical part, where the reimplementation of the KVĚTA program and training of the BiLSTM-CRF model with various input configurations are described (Chapter~\ref{chap:implementation}). Finally, the obtained results are presented and discussed (Chapter~\ref{chap:results}).
+
+\section*{Objectives}
+The theoretical part of this work aims to build common ground and introduce the reader to the concepts of verse and machine learning theory used in this thesis. Furthermore, it intends to present the structure and contents of the Corpus of Czech Verse, the metrical tagging pipeline with all its subtasks, and the existing approaches to solve this task.
+
+The objective of the practical part is to reimplement the KVĚTA data-driven approach and train the BiLSTM-CRF sequence tagging model. For the BiLSTM-CRF, the goal is to propose various input configurations that may be beneficial to the model and to test all of them. Based on the obtained results, the aim is to decide whether using the BiLSTM-CRF model for the metrical tagging of Czech syllabotonic verse is successful and has some benefits over using the KVĚTA approach.
