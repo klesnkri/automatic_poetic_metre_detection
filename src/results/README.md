@@ -15,11 +15,11 @@
 |                                                                                                                                                 | syll acc | line acc | poem acc |
 |-------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|:--------:|:--------:|
 | KVETA                                                                                                                                           |  97.02   |  81.88   |  69.83   |
-| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables; Max epochs: 15)                                                          |  97.93   |  95.67   |  66.78   |
-| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables, authors, years; Max epochs: 15)                                          |  98.14   |  95.97   |  66.29   |
-| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables, authors, years, POS tags; Max epochs: 15)                                |  98.69   |  96.85   |  72.34   |
-| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables, authors, years, POS tags, lemmas; Max epochs: 15)                        |  98.74   |  96.94   |  72.98   |
-| BiLSTM-CRF with X-SAMPA syllable embeddings poem as line (Input: Line idx, X-SAMPA syllables, authors, years, POS tags, lemmas; Max epochs: 15) |  99.71   |  99.17   |  92.51   |
+| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables; Max epochs: 15)                                                          |  97.91   |  95.55   |  63.84   |
+| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables, authors, years; Max epochs: 15)                                          |  98.14   |  95.96   |  67.00   |
+| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables, authors, years, POS tags; Max epochs: 15)                                |  98.69   |  96.87   |  72.28   |
+| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables, authors, years, POS tags, lemmas; Max epochs: 15)                        |  98.79   |  97.07   |  74.53   |
+| BiLSTM-CRF with X-SAMPA syllable embeddings poem as line (Input: Line idx, X-SAMPA syllables, authors, years, POS tags, lemmas; Max epochs: 15) |  99.73   |  99.18   |  92.41   |
 | BiLSTM-CRF with tokens embeddings (Input: tokens; Max epochs: 15)                                                                               |    -     |  74.38   |   8.69   |
 | BiLSTM-CRF with tokens embeddings (Input: tokens, authors, years; Max epochs: 15)                                                               |    -     |  75.91   |  10.29   |
 | BiLSTM-CRF with tokens embeddings (Input: tokens, authors, years, POS tags; Max epochs: 15)                                                     |    -     |  76.94   |  11.17   |
@@ -31,11 +31,11 @@
 |                                                                                                                                                            | syll acc | line acc | poem acc |
 |------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|:--------:|:--------:|
 | KVETA                                                                                                                                                      |  96.08   |  80.64   |  68.26   |
-| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables; Max epochs: 15)                                                                     |  97.78   |  95.31   |  62.91   |
-| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables, authors, years; Max epochs: 15)                                                     |  98.21   |  96.09   |  67.20   |
-| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables, authors, years, POS tags; Max epochs: 15)                                           |  98.72   |  96.96   |  73.41   |
-| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables, authors, years, POS tags, lemmas; Max epochs: 15)                                   |  98.83   |  97.12   |  73.06   |
-| BiLSTM-CRF with X-SAMPA syllable embeddings poem as line (Input: Line idx, X-SAMPA syllables, authors, years, POS tags, lemmas; Max epochs: 15)            |  99.61   |  98.86   |  90.40   |
+| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables; Max epochs: 15)                                                                     |  97.82   |  95.29   |  61.79   |
+| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables, authors, years; Max epochs: 15)                                                     |  98.22   |  96.05   |  65.33   |
+| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables, authors, years, POS tags; Max epochs: 15)                                           |  98.76   |  96.98   |  72.21   |
+| BiLSTM-CRF with X-SAMPA syllable embeddings (Input: X-SAMPA syllables, authors, years, POS tags, lemmas; Max epochs: 15)                                   |  98.85   |  97.17   |  74.20   |
+| BiLSTM-CRF with X-SAMPA syllable embeddings poem as line (Input: Line idx, X-SAMPA syllables, authors, years, POS tags, lemmas; Max epochs: 15)            |  99.60   |  98.81   |  90.75   |
 | BiLSTM-CRF with tokens embeddings (Input: tokens; Max epochs: 15)                                                                                          |    -     |  72.14   |   7.56   |
 | BiLSTM-CRF with tokens embeddings (Input: tokens, authors, years; Max epochs: 15)                                                                          |    -     |  76.60   |   9.64   |
 | BiLSTM-CRF with tokens embeddings (Input: tokens, authors, years, POS tags; Max epochs: 15)                                                                |    -     |  78.40   |  11.27   |
